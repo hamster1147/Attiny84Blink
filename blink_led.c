@@ -1,26 +1,54 @@
 #include <avr/io.h>
-#include <util/delay.h>
+#include <avr/interrupt.h>
+#include <stdbool.h>
 
-#define MS_DELAY 50
+#define RED_LED PORTA1
+#define BLUE_LED PORTA3
+#define GREEN_LED PORTA2
 
-int main (void) {
+#define OVERFLOW_LED BLUE_LED
+#define OVERFLOW_BLINK_TIME_CYCLES 2000
+
+int main (void)
+{
+    bool overflowLedEnabled = false;
+
     /*Set to one the fifth bit of DDRB to one
     **Set digital pin 13 to output mode */
     DDRB |= _BV(DDB3);
 
-    while(1) {
-        /*Set to one the fifth bit of PORTB to one
-        **Set to HIGH the pin 13 */
-        PORTB |= _BV(PORTB3);
+    // Setup 16bit Timer (Timer1)
+    // Set to normal mode
+    TCCR1A = 0x0;
+    TCCR1B = 0x0;
+    // No Prescalar
+    TCCR1B |= _BV(CS10);
+    //TCCR1B |= _BV(CS11);
+    //TCCR1B |= _BV(CS12);
 
-        /*Wait 3000 ms */
-        _delay_ms(MS_DELAY);
+    // Set Timer1 Overflow Interrupt Enable
+    TIMSK1 = 0x0;
+    TIMSK1 |= TOIE1;
 
-        /*Set to zero the fifth bit of PORTB
-        **Set to LOW the pin 13 */
-        PORTB &= ~_BV(PORTB3);
+    while(1)
+    {
+        if (overflowLedEnabled)
+        {
+            int timer = TCNT1;
+            if (timer >= OVERFLOW_BLINK_TIME_CYCLES)
+            {
+                PORTB &= ~_BV(OVERFLOW_LED);
+                overflowLedEnabled = false;
+            }
+        }
+    }
 
-        /*Wait 3000 ms */
-        _delay_ms(MS_DELAY);
+    // Timer1 Overflow Interrupt Vector
+    ISR(TIM1_OVF_vect)
+    {
+        cli();
+        PORTB |= _BV(OVERFLOW_LED);
+        overflowLedEnabled = true;
+        sei();
     }
 }

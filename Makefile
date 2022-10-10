@@ -1,5 +1,5 @@
 PRJ = blink_led
-MCU = attiny85
+MCU = attiny84
 CLK = 16000000
 PRG = usbtiny
 SRC = $(PRJ).c

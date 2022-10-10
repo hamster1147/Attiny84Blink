@@ -21,6 +21,15 @@ void ledOff(int port)
    PORTA |= _BV(port);
 }
 
+// Timer1 Overflow Interrupt Vector
+ISR(TIMER1_COMPA_vect)
+{
+   cli(); // Disable global interrupt flag to do work
+   ledOn(OVERFLOW_LED);
+   _overflowLedEnabled = true;
+   sei(); // Re-enable global interrupt flag
+}
+
 int main (void)
 {
     PORTA = 0x0;
@@ -32,12 +41,14 @@ int main (void)
 
     // Setup 16bit Timer (Timer1)
     TCCR1A = 0x0; // Stop Timer
+    TCCR1B = 0x0; // Stop Timer
+    TCCR1C = 0x0; // Stop Timer
     TCNT1 = 0x0; // Reset Timer
     GTCCR = _BV(PSR10); // Reset prescaler
-    OCR1A = 0xFFFF; // Set compare to MAX to reset timer
+    OCR1A = 0xFF00; // Set compare to MAX to reset timer
     TIMSK1 |= _BV(OCIE1A); // Set Timer1 Compare A Interrupt Enable
-    TCCR1B |= _BV(WGM12); // Enable Clear Timer on Compare mode
     TCCR1B = 0x0;
+    TCCR1B |= _BV(WGM12); // Enable Clear Timer on Compare mode
     // 1024 Prescalar
     TCCR1B |= _BV(CS10);
     TCCR1B |= _BV(CS11);
@@ -51,6 +62,17 @@ int main (void)
 
     while(1)
     {
+	if (TCNT1 <= 2000)
+        {
+           ledOff(GREEN_LED);
+           ledOn(RED_LED);
+        }
+        else
+        {
+           ledOn(GREEN_LED);
+           ledOff(RED_LED);
+        }
+
         if (_overflowLedEnabled)
         {
             int timer = TCNT1;
@@ -61,13 +83,4 @@ int main (void)
             }
         }
     }
-}
-
-// Timer1 Overflow Interrupt Vector
-ISR(TIMER1_COMPA_vect)
-{
-   cli(); // Disable global interrupt flag to do work
-   ledOn(OVERFLOW_LED);
-   _overflowLedEnabled = true;
-   sei(); // Re-enable global interrupt flag
 }

@@ -1,8 +1,12 @@
 PRJ = blink_led
 MCU = attiny84
-CLK = 16000000
+CLK = 8000000
 PRG = usbtiny
 SRC = $(PRJ).c
+
+LFU = 0x62
+HFU = 0x6F
+EFU = 0xFF
 
 CC     = avr-gcc
 CFLAGS = -Wall -Os -DF_CPU=$(CLK) -mmcu=$(MCU) $(INCLUDE)
@@ -37,3 +41,6 @@ $(PRJ).hex: $(PRJ).elf
 clean:
 	rm -f *.hex *.elf *.o
 	$(foreach dir, $(EXT), rm -f $(dir)/*.o;)
+
+fuse:
+	$(AVRDUDE) -U lfuse:w:$(LFU):m -U hfuse:w:$(HFU):m -U efuse:w:$(EFU):m

@@ -31,20 +31,18 @@ int main (void)
     DDRA |= _BV(GREEN_LED);
 
     // Setup 16bit Timer (Timer1)
-    // Set to normal mode
-    TCCR1A = 0x0;
-    TCCR1B = 0x0;
-    // No Prescalar
+    TCCR1 = 0x0; // Stop Timer
+    TCNT1 = 0x0; // Reset Timer
+    GTCCR = _BV(PSR10); // Reset prescaler
+    OCR1A = MAX; // Set compare to MAX to reset timer
+    TIMSK1 |= _BV(OCIE1A); // Set Timer1 Compare A Interrupt Enable
+    TCCR1B |= _BV(WGM12); // Enable Clear Timer on Compare mode
+    // 1024 Prescalar
     TCCR1B |= _BV(CS10);
-    //TCCR1B |= _BV(CS11);
-    //TCCR1B |= _BV(CS12);
+    TCCR1B |= _BV(CS11);
+    TCCR1B |= _BV(CS12);
 
-    // Set Timer1 Overflow Interrupt Enable
-    TIMSK1 = 0x0;
-    TIMSK1 |= TOIE1;
-
-    // Enable global interrupt flag
-    sei();
+    sei(); // Enable global interrupt flag
 
     ledOff(RED_LED);
     ledOff(GREEN_LED);
@@ -65,12 +63,10 @@ int main (void)
 }
 
 // Timer1 Overflow Interrupt Vector
-ISR(TIM1_OVF_vect)
+ISR(TIMER1_COMPA_vect)
 {
-   // Disable global interrupt flag to do work
-   cli();
+   cli(); // Disable global interrupt flag to do work
    ledOn(OVERFLOW_LED);
    _overflowLedEnabled = true;
-   // Re-enable global interrupt flag
-   sei();
+   sei(); // Re-enable global interrupt flag
 }

@@ -31,12 +31,13 @@ int main (void)
     DDRA |= _BV(GREEN_LED);
 
     // Setup 16bit Timer (Timer1)
-    TCCR1 = 0x0; // Stop Timer
+    TCCR1A = 0x0; // Stop Timer
     TCNT1 = 0x0; // Reset Timer
     GTCCR = _BV(PSR10); // Reset prescaler
-    OCR1A = MAX; // Set compare to MAX to reset timer
+    OCR1A = 0xFFFF; // Set compare to MAX to reset timer
     TIMSK1 |= _BV(OCIE1A); // Set Timer1 Compare A Interrupt Enable
     TCCR1B |= _BV(WGM12); // Enable Clear Timer on Compare mode
+    TCCR1B = 0x0;
     // 1024 Prescalar
     TCCR1B |= _BV(CS10);
     TCCR1B |= _BV(CS11);

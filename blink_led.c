@@ -1,7 +1,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <stdbool.h>
 
+#define TIMER_MAX 65536
 #define F_CPU 8000000UL // 8 MHz
 #define TIMER1_PRESCALAR 1024
 #define F_TIMER1 F_CPU / TIMER1_PRESCALAR // 7,812.5 Hz
@@ -14,10 +14,9 @@
 
 #define OVERFLOW_LED BLUE_LED
 
+#define BLINK_COUNT_MAX 5
 #define BLINK_LED RED_LED
 #define BLINK_INTERVAL_COUNT ((F_TIMER1 * 3.0) / 5.0)
-
-static bool _overflowLedEnabled = false;
 
 void ledOn(int port)
 {
@@ -29,19 +28,24 @@ void ledOff(int port)
    PORTA |= _BV(port);
 }
 
+void ledToggle(int port)
+{
+   PORTA ^= _BV(port);
+}
+
 // Timer1 Overflow Interrupt Vector
 ISR(TIM1_OVF_vect)
 {
    cli(); // Disable global interrupt flag to do work
-   ledOn(OVERFLOW_LED);
-   _overflowLedEnabled = true;
+   ledToggle(OVERFLOW_LED);
    sei(); // Re-enable global interrupt flag
 }
 
 int main (void)
 {
-    int nextOnCount = BLINK_INTERVAL_COUNT;
-    int nextOffCount = BLINK_INTERVAL_COUNT + BLINK_DURATION_COUNT;
+    unsigned char totalBlinks = 0;
+    unsigned long nextOnCount = BLINK_INTERVAL_COUNT;
+    unsigned long nextOffCount = BLINK_INTERVAL_COUNT + BLINK_DURATION_COUNT;
 
     PORTA = 0x0;
     // Set direction of LED pins
@@ -77,24 +81,19 @@ int main (void)
     while(1)
     {
         int timer = TCNT1;
-        if (timer >= nextOnCount)
+        if (totalBlinks < BLINK_COUNT_MAX)
         {
-            ledOn(BLINK_LED);
-            nextOnCount += BLINK_INTERVAL_COUNT;
-        }
-
-        if (timer >= nextOffCount)
-        {
-            ledOff(BLINK_LED);
-            nextOffCount = nextOnCount + BLINK_DURATION_COUNT;
-        }
-
-        if (_overflowLedEnabled)
-        {
-            if (timer >= BLINK_DURATION_COUNT)
+            if (timer >= nextOnCount)
             {
-                ledOff(OVERFLOW_LED);
-                _overflowLedEnabled = false;
+                ledOn(BLINK_LED);
+                nextOnCount += BLINK_INTERVAL_COUNT;
+            }
+
+            if (timer >= nextOffCount)
+            {
+                ledOff(BLINK_LED);
+                nextOffCount = nextOnCount + BLINK_DURATION_COUNT;
+                totalBlinks++;
             }
         }
     }

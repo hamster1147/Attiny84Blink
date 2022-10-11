@@ -4,8 +4,8 @@ CLK = 8000000
 PRG = usbtiny
 SRC = $(PRJ).c
 
-LFU = 0x62
-HFU = 0x6F
+LFU = 0xE2
+HFU = 0xDF
 EFU = 0xFF
 
 CC     = avr-gcc

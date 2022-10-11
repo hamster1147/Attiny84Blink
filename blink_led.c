@@ -51,7 +51,7 @@ int main (void)
     TCCR1B |= _BV(WGM12); // Enable Clear Timer on Compare mode
     // 1024 Prescalar
     TCCR1B |= _BV(CS10);
-    TCCR1B |= _BV(CS11);
+    //TCCR1B |= _BV(CS11);
     TCCR1B |= _BV(CS12);
 
     sei(); // Enable global interrupt flag

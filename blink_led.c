@@ -10,13 +10,13 @@
 #define BLUE_LED PORTA3
 #define GREEN_LED PORTA2
 
-#define BLINK_DURATION_COUNT (0.1 * F_TIMER1) // 0.1 seconds
+#define BLINK_DURATION_COUNT (0.25 * F_TIMER1) // 0.1 seconds
 
 #define OVERFLOW_LED BLUE_LED
 
 #define BLINK_COUNT_MAX 5
 #define BLINK_LED RED_LED
-#define BLINK_INTERVAL_COUNT ((F_TIMER1 * 3.0) / 5.0)
+#define BLINK_INTERVAL_COUNT (3.0 * F_TIMER1)
 
 void ledOn(int port)
 {

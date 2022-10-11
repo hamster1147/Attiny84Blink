@@ -2,12 +2,20 @@
 #include <avr/interrupt.h>
 #include <stdbool.h>
 
+#define F_CPU 8000000UL // 8 MHz
+#define TIMER1_PRESCALAR 1024
+#define F_TIMER1 F_CPU / F_CPU // 7,812.5 Hz
+
 #define RED_LED PORTA1
 #define BLUE_LED PORTA3
 #define GREEN_LED PORTA2
 
+#define BLINK_DURATION_COUNT (0.5 * F_TIMER1) // 0.5 seconds
+
 #define OVERFLOW_LED BLUE_LED
-#define OVERFLOW_BLINK_TIME_CYCLES 1000
+
+#define BLINK_LED RED_LED
+#define BLINK_INTERVAL_COUNT ((F_TIMER1 * 3.0) / 5.0)
 
 static bool _overflowLedEnabled = false;
 
@@ -32,6 +40,9 @@ ISR(TIM1_OVF_vect)
 
 int main (void)
 {
+    int nextOnCount = BLINK_INTERVAL_COUNT;
+    int nextOffCount = BLINK_INTERVAL_COUNT + BLINK_DURATION_COUNT;
+
     PORTA = 0x0;
     // Set direction of LED pins
     DDRA = 0x0;
@@ -65,21 +76,22 @@ int main (void)
 
     while(1)
     {
-	if (TCNT1 <= 2000)
+        int timer = TCNT1;
+        if (timer >= nextOnCount)
         {
-           //ledOff(GREEN_LED);
-           ledOn(RED_LED);
+            ledOn(BLINK_LED);
+            nextOnCount += BLINK_INTERVAL_COUNT;
         }
-        else
+
+        if (timer >= nextOffCount)
         {
-           //ledOn(GREEN_LED);
-           ledOff(RED_LED);
+            ledOff(BLINK_LED);
+            nextOffCount = nextOnCount + BLINK_DURATION_COUNT;
         }
 
         if (_overflowLedEnabled)
         {
-            int timer = TCNT1;
-            if (timer >= OVERFLOW_BLINK_TIME_CYCLES)
+            if (timer >= BLINK_DURATION_COUNT)
             {
                 ledOff(OVERFLOW_LED);
                 _overflowLedEnabled = false;

@@ -4,13 +4,13 @@
 
 #define F_CPU 8000000UL // 8 MHz
 #define TIMER1_PRESCALAR 1024
-#define F_TIMER1 F_CPU / F_CPU // 7,812.5 Hz
+#define F_TIMER1 F_CPU / TIMER1_PRESCALAR // 7,812.5 Hz
 
 #define RED_LED PORTA1
 #define BLUE_LED PORTA3
 #define GREEN_LED PORTA2
 
-#define BLINK_DURATION_COUNT (0.5 * F_TIMER1) // 0.5 seconds
+#define BLINK_DURATION_COUNT (0.1 * F_TIMER1) // 0.1 seconds
 
 #define OVERFLOW_LED BLUE_LED
 

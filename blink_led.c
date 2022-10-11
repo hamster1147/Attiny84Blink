@@ -33,6 +33,18 @@ void ledToggle(int port)
    PORTA ^= _BV(port);
 }
 
+unsigned long coerceToTimerScale(unsigned long value)
+{
+    if (value > TIMER_MAX)
+    {
+        return value - TIMER_MAX;
+    }
+    else
+    {
+        return value;
+    }
+}
+
 // Timer1 Overflow Interrupt Vector
 ISR(TIM1_OVF_vect)
 {
@@ -86,13 +98,13 @@ int main (void)
             if (timer >= nextOnCount)
             {
                 ledOn(BLINK_LED);
-                nextOnCount += BLINK_INTERVAL_COUNT;
+                nextOnCount = coerceToTimerScale(nextOnCount + BLINK_INTERVAL_COUNT);
             }
 
             if (timer >= nextOffCount)
             {
                 ledOff(BLINK_LED);
-                nextOffCount = nextOnCount + BLINK_DURATION_COUNT;
+                nextOffCount = coerceToTimerScale(nextOnCount + BLINK_DURATION_COUNT);
                 totalBlinks++;
             }
         }

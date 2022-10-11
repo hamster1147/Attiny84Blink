@@ -1,11 +1,15 @@
-```
-sudo apt-get install gcc-avr binutils-avr avr-libc
-sudo apt-get install avrdude
-```
+### Resources:
+https://gcc.gnu.org/wiki/HomePage
+https://ww1.microchip.com/downloads/en/DeviceDoc/doc8006.pdf
+http://eleccelerator.com/fusecalc/fusecalc.php?chip=attiny84
+https://gist.github.com/mcous/5920089
 
-```
-avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o blink_led.o blink_led.c
-avr-gcc -mmcu=atmega328p blink_led.o -o blink_led
-avr-objcopy -O ihex -R .eeprom blink_led blink_led.hex
-avrdude -v -patmega328p -carduino -P/dev/ttyUSB0 -b57600 -D -Uflash:w:blink_led.hex:i
-```
+### Issues in order:
+- Getting Linux laptop working again
+- Remembering how to make a Makefile
+- Realizing controlling the LED was inverted
+- Making sure fuses were correct.
+- Getting Timer1 to work (I messed up a few bit settings). I learned that turning on the Compare A interrupt seemed to force the Timer into CTC mode.
+- Realizing that ints are 2 bytes
+- Realizing that I didn't use an unsigned long on the timer polling. (I assume this is the big issue Glenn caught in his email)
+- Working out a solution for setting/checking timer count values that go beyond the max timer count.

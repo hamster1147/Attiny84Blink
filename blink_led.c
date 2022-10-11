@@ -7,7 +7,7 @@
 #define GREEN_LED PORTA2
 
 #define OVERFLOW_LED BLUE_LED
-#define OVERFLOW_BLINK_TIME_CYCLES 2000
+#define OVERFLOW_BLINK_TIME_CYCLES 1000
 
 static bool _overflowLedEnabled = false;
 
@@ -25,7 +25,7 @@ void ledOff(int port)
 ISR(TIM1_OVF_vect)
 {
    cli(); // Disable global interrupt flag to do work
-   ledOn(GREEN_LED);
+   ledOn(OVERFLOW_LED);
    _overflowLedEnabled = true;
    sei(); // Re-enable global interrupt flag
 }
@@ -76,16 +76,14 @@ int main (void)
            ledOff(RED_LED);
         }
 
-        /*
         if (_overflowLedEnabled)
         {
             int timer = TCNT1;
             if (timer >= OVERFLOW_BLINK_TIME_CYCLES)
             {
-                //ledOff(OVERFLOW_LED);
+                ledOff(OVERFLOW_LED);
                 _overflowLedEnabled = false;
             }
         }
-        */
     }
 }

@@ -1,4 +1,5 @@
 ### Resources:
+- https://create.arduino.cc/projecthub/milanistef/introduction-to-bare-metal-programming-in-arduino-uno-f3e2b4
 - https://gcc.gnu.org/wiki/HomePage
 - https://ww1.microchip.com/downloads/en/DeviceDoc/doc8006.pdf
 - http://eleccelerator.com/fusecalc/fusecalc.php?chip=attiny84

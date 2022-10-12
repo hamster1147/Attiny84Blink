@@ -15,4 +15,4 @@
 - Working out a solution for setting/checking timer count values that go beyond the max timer count.
 
 ### Setup used:
-![](https://github.com/hamster1147/Attiny84Blink/blob/develop/KiCAD/Attiny84Blink.PNG?raw=true)
+![](https://github.com/hamster1147/Attiny84Blink/blob/develop/Media/Attiny84Blink.PNG?raw=true)
